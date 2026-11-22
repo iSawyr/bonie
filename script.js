@@ -467,6 +467,74 @@ try {
   announceSlideStatus("Saved slides couldn't be loaded. Showing the starter slides instead.", true);
 }
 
+if (new URLSearchParams(window.location.search).has("export")) {
+  const exportedConfig = {
+    slides,
+    siteBackgroundColor: localStorage.getItem(siteBackgroundStorageKey) || defaultSiteBackground,
+    siteBackgroundImage: localStorage.getItem(siteBackgroundImageStorageKey) || "",
+  };
+  const blob = new Blob([JSON.stringify(exportedConfig, null, 2)], {
+    type: "application/json",
+  });
+  const downloadUrl = URL.createObjectURL(blob);
+  const downloadLink = document.createElement("a");
+  downloadLink.href = downloadUrl;
+  downloadLink.download = "bonnie-site-config.json";
+  downloadLink.click();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+}
+
+fetch("bonnie-site-config.json")
+  .then(response => {
+    if (!response.ok) throw new Error("Customization data was not found.");
+    return response.json();
+  })
+  .then(config => {
+    if (!config || !isValidSlideList(config.slides)) {
+      throw new Error("Customization data has an unsupported format.");
+    }
+
+    slides = config.slides.map(slide => {
+      const spotify = getSpotifyEmbed(slide.spotify || "");
+      return {
+        ...slide,
+        background: slide.background || "",
+        pageBackground: slide.pageBackground || "",
+        spotify: spotify ? spotify.src : "",
+        blurAmount: slide.blurAmount === undefined ? 12 : slide.blurAmount,
+        backgroundBlur: slide.backgroundBlur === undefined ? 0 : slide.backgroundBlur,
+        pageBackgroundOpacity: slide.pageBackgroundOpacity === undefined ? 70 : slide.pageBackgroundOpacity,
+        pageBackgroundBlur: slide.pageBackgroundBlur === undefined ? 0 : slide.pageBackgroundBlur,
+        font: slide.font || "modern",
+        color: slide.color || "",
+        colorOpacity: getSlideColorOpacity(slide),
+        textColor: slide.textColor || "",
+        textSize: getSlideTextSize(slide),
+        textAlign: slide.textAlign || "left",
+        textBold: Boolean(slide.textBold),
+        textItalic: Boolean(slide.textItalic),
+        width: slide.width === undefined ? 68 : slide.width,
+        height: slide.height === undefined ? 28 : slide.height,
+        imagePosition: slide.imagePosition || { x: 50, y: 50 },
+        backgroundPosition: slide.backgroundPosition || { x: 50, y: 50 },
+      };
+    });
+
+    if (/^#[0-9a-f]{6}$/i.test(config.siteBackgroundColor || "")) {
+      siteBackgroundColorInput.value = config.siteBackgroundColor;
+      applySiteBackgroundColor(config.siteBackgroundColor);
+    }
+
+    siteBackgroundImage = config.siteBackgroundImage || "";
+    removeSiteBackgroundImageButton.disabled = !siteBackgroundImage;
+    setBackgroundImage(siteBackgroundState, siteBackgroundImage, true);
+    currentSlide = 0;
+    renderSlide();
+  })
+  .catch(() => {
+    // The starter slides remain available if no customization file is deployed.
+  });
+
 function renderSlide() {
   const slide = slides[currentSlide];
   applySlideBackgroundOpacity(slide);
