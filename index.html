@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A little something for Bonnie</title>
+  <meta name="description" content="A starry slideshow made for Bonnie.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Nunito:wght@400;500;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Quicksand:wght@400;500;700&family=Special+Elite&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <noscript><style>.intro { display: none; }</style></noscript>
+
+  <div class="site-background" aria-hidden="true">
+    <img id="site-background-first" class="site-background-image" alt="">
+    <img id="site-background-second" class="site-background-image" alt="">
+  </div>
+  <div id="slide-page-background" class="slide-page-background" aria-hidden="true">
+    <img id="slide-page-background-first" class="slide-page-background-image" alt="">
+    <img id="slide-page-background-second" class="slide-page-background-image" alt="">
+  </div>
+  <canvas id="stars" aria-hidden="true"></canvas>
+
+  <div id="intro" class="intro">
+    <button id="intro-hi" class="intro-hi" type="button" aria-label="Say hi">hi bonie</button>
+    <p id="intro-hint" class="intro-hint">i made u a little something</p>
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="#top">for bonnie</a>
+    <p class="header-note">a little something under the stars</p>
+  </header>
+
+  <main id="top">
+    <section class="slideshow" aria-label="Slideshow for Bonnie">
+      <div class="slide-card">
+        <img id="slide-background" class="slide-background" alt="" aria-hidden="true" hidden>
+        <div id="slide-art" class="slide-art" data-art="moon" role="img" aria-label="Starry placeholder artwork">
+          <div class="art-placeholder" aria-hidden="true">
+            <span class="placeholder-star star-one"></span>
+            <span class="placeholder-star star-two"></span>
+            <span class="placeholder-star star-three"></span>
+            <span class="placeholder-horizon"></span>
+          </div>
+          <img id="slide-image" alt="" hidden>
+        </div>
+        <article class="slide-copy" aria-live="polite">
+          <p id="slide-kicker" class="slide-kicker">A little note</p>
+          <h1 id="slide-title">A little something for you</h1>
+          <div class="slide-message-box">
+            <p id="slide-message"></p>
+          </div>
+          <div id="spotify-container" class="spotify-container" hidden>
+            <iframe
+              id="spotify-embed"
+              class="spotify-embed"
+              title="Spotify player"
+              loading="lazy"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              referrerpolicy="strict-origin-when-cross-origin">
+            </iframe>
+          </div>
+        </article>
+      </div>
+
+      <div class="slideshow-controls" aria-label="Slideshow navigation">
+        <button id="previous-slide" class="arrow-button" type="button" aria-label="Previous slide">
+          <span aria-hidden="true">&larr;</span>
+        </button>
+        <div class="slide-position">
+          <span id="slide-count" aria-live="polite"></span>
+          <div id="slide-dots" class="slide-dots" aria-label="Choose a slide"></div>
+        </div>
+        <button id="next-slide" class="arrow-button" type="button" aria-label="Next slide">
+          <span aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+      <p id="slide-status" class="slide-status" role="status" aria-live="polite"></p>
+
+      <details class="slide-manager">
+        <summary>Manage slides</summary>
+        <div class="manager-content">
+          <p class="storage-note">Your slides and pictures are saved only in this browser on this device.</p>
+          <fieldset class="site-appearance">
+            <legend>Whole-site background</legend>
+            <label for="site-background-color">Whole-site color</label>
+            <input id="site-background-color" type="color" value="#070b1a">
+            <label for="site-background-image">Whole-site picture</label>
+            <input id="site-background-image" type="file" accept="image/*">
+            <button id="remove-site-background-image" class="button secondary" type="button" disabled>Remove whole-site picture</button>
+            <button id="reset-site-background" class="button secondary" type="button">Reset night colors</button>
+          </fieldset>
+          <div class="manager-actions">
+            <button id="add-slide" class="button" type="button">Add a slide</button>
+            <button id="edit-slide" class="button secondary" type="button">Edit this slide</button>
+            <button id="delete-slide" class="button secondary" type="button">Delete this slide</button>
+            <button id="move-picture" class="button secondary" type="button" aria-pressed="false" disabled>Move main picture</button>
+            <button id="move-background" class="button secondary" type="button" aria-pressed="false" disabled>Move background</button>
+            <button id="finish-moving" class="button" type="button" hidden>Done moving</button>
+          </div>
+          <p id="move-hint" class="move-hint" role="status" aria-live="polite" hidden></p>
+          <form id="slide-form" class="slide-form" hidden>
+            <label>
+              Label above title (optional)
+              <input id="slide-kicker-input" name="kicker" type="text" maxlength="40" placeholder="Slide 1">
+              <span class="field-hint">Leave empty to show the slide number automatically.</span>
+            </label>
+            <label>
+              Title
+              <input id="slide-title-input" name="title" type="text" maxlength="80" required>
+            </label>
+            <label>
+              Message
+              <textarea id="slide-message-input" name="message" rows="6" required></textarea>
+            </label>
+            <label>
+              Spotify link (optional)
+              <input id="spotify-input" name="spotify" type="url" placeholder="https://open.spotify.com/track/...">
+            </label>
+            <label>
+              Picture (optional)
+              <input id="slide-image-input" name="image" type="file" accept="image/*">
+            </label>
+            <label class="remove-picture-option">
+              <input id="remove-picture" type="checkbox">
+              Remove the current picture
+            </label>
+            <label>
+              Background picture for this slide (optional)
+              <input id="slide-background-input" name="background" type="file" accept="image/*">
+              <span class="field-hint">Shown inside this slide card only; the whole-site picture stays separate.</span>
+            </label>
+            <label class="remove-background-option">
+              <input id="remove-background" type="checkbox">
+              Remove this slide's background
+            </label>
+            <label>
+              Full-page picture for this slide (optional)
+              <input id="slide-page-background-input" name="pageBackground" type="file" accept="image/*">
+              <span class="field-hint">Shown behind the whole page on this slide; it does not change the whole-site or slide-card picture.</span>
+            </label>
+            <label class="remove-page-background-option">
+              <input id="remove-page-background" type="checkbox">
+              Remove this slide's full-page picture
+            </label>
+            <label class="blur-setting">
+              Full-page picture opacity: <output id="page-background-opacity-value" for="slide-page-background-opacity">70%</output>
+              <input id="slide-page-background-opacity" name="pageBackgroundOpacity" type="range" min="0" max="100" step="1" value="70">
+              <span class="field-hint">0% hides this picture; 100% shows it fully over the whole-site background.</span>
+            </label>
+            <label class="blur-setting">
+              Full-page picture blur: <output id="page-background-blur-value" for="slide-page-background-blur">0px</output>
+              <input id="slide-page-background-blur" name="pageBackgroundBlur" type="range" min="0" max="24" step="1" value="0">
+            </label>
+            <label class="blur-setting">
+              Background picture blur: <output id="background-blur-value" for="slide-background-blur">0px</output>
+              <input id="slide-background-blur" name="backgroundBlur" type="range" min="0" max="24" step="1" value="0">
+              <span class="field-hint">Adjusts the blur of this slide's background picture.</span>
+            </label>
+            <label class="blur-setting">
+              Slide background opacity: <output id="background-opacity-value" for="slide-background-opacity">100%</output>
+              <input id="slide-background-opacity" name="backgroundOpacity" type="range" min="0" max="100" step="1" value="100">
+              <span class="field-hint">Adjusts how strongly this slide's background picture shows through, including when blurred.</span>
+            </label>
+            <div class="slide-color-setting">
+              <label for="slide-color-enabled">
+                <input id="slide-color-enabled" type="checkbox">
+                Use a custom color for this slide
+              </label>
+              <label for="slide-color">Slide color</label>
+              <input id="slide-color" name="color" type="color" value="#1c2a4b" disabled>
+              <label class="blur-setting">
+                Slide color opacity: <output id="slide-color-opacity-value" for="slide-color-opacity">100%</output>
+                <input id="slide-color-opacity" name="colorOpacity" type="range" min="0" max="100" step="1" value="100" disabled>
+              </label>
+            </div>
+            <fieldset class="slide-text-setting">
+              <legend>Whole-slide text style</legend>
+              <label class="text-style-toggle" for="slide-text-color-enabled">
+                <input id="slide-text-color-enabled" type="checkbox">
+                Use a custom text color
+              </label>
+              <label for="slide-text-color">Text color</label>
+              <input id="slide-text-color" name="textColor" type="color" value="#eef2ff" disabled>
+              <label class="size-setting">
+                Text size: <output id="slide-text-size-value" for="slide-text-size">100%</output>
+                <input id="slide-text-size" name="textSize" type="range" min="75" max="150" step="5" value="100">
+              </label>
+              <label>
+                Text alignment
+                <select id="slide-text-align" name="textAlign">
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </label>
+              <label class="text-style-toggle">
+                <input id="slide-text-bold" name="textBold" type="checkbox">
+                Bold text
+              </label>
+              <label class="text-style-toggle">
+                <input id="slide-text-italic" name="textItalic" type="checkbox">
+                Italic text
+              </label>
+            </fieldset>
+            <label class="size-setting">
+              Slide width: <output id="slide-width-value" for="slide-width">68rem</output>
+              <input id="slide-width" name="width" type="range" min="40" max="100" step="1" value="68">
+            </label>
+            <label class="size-setting">
+              Slide height: <output id="slide-height-value" for="slide-height">28rem</output>
+              <input id="slide-height" name="height" type="range" min="20" max="100" step="1" value="28">
+            </label>
+            <label>
+              Font for this slide
+              <select id="slide-font" name="font">
+                <option value="modern">Soft sans-serif</option>
+                <option value="serif">Elegant serif</option>
+                <option value="rounded">Rounded</option>
+                <option value="handwritten">Playful handwritten</option>
+                <option value="typewriter">Typewriter</option>
+                <option value="playfair">Classic serif (Playfair Display)</option>
+                <option value="cormorant">Flowing serif (Cormorant Garamond)</option>
+                <option value="lora">Warm serif (Lora)</option>
+                <option value="merriweather">Bold serif (Merriweather)</option>
+                <option value="poppins">Clean rounded (Poppins)</option>
+                <option value="nunito">Friendly rounded (Nunito)</option>
+                <option value="quicksand">Soft rounded (Quicksand)</option>
+                <option value="dancing">Flowing script (Dancing Script)</option>
+                <option value="caveat">Casual handwriting (Caveat)</option>
+                <option value="specialelite">Vintage typewriter (Special Elite)</option>
+              </select>
+            </label>
+            <label class="blur-setting">
+              Transition blur: <output id="blur-amount-value" for="slide-blur">12px</output>
+              <input id="slide-blur" name="blur" type="range" min="0" max="24" step="1" value="12">
+              <span class="field-hint">Controls how blurry this slide becomes during transitions.</span>
+            </label>
+            <div class="form-actions">
+              <button id="save-slide" class="button" type="submit">Save slide</button>
+              <button id="cancel-slide" class="button secondary" type="button">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
